@@ -18,19 +18,33 @@ Status as checked on this machine (Windows 11):
 Do **Step 1 (Firebase)** first — both build paths need `google-services.json` — then pick a
 build path.
 
-## Step 1 — Firebase project (required either way)
+## Step 1 — Firebase project — ALREADY DONE (2026-07-15, via `scripts/setup-firebase.ps1` + CLI)
 
-1. https://console.firebase.google.com → **Add project** → name it `ogbaje` (Analytics off is fine).
-2. **Add an Android app**: package name **`com.ogbaje.app`** (must match `app.json`) →
-   download **`google-services.json`** → place it at **`OgbajeApp/google-services.json`**
-   (git-ignored; never committed — `app.json` points `android.googleServicesFile` at it).
-3. **Add a Web app** (for the dashboard) → copy the config into `dashboard/.env.local`
-   (git-ignored) — variable names are in `dashboard/.env.example`.
-4. Console → **Authentication → Sign-in method → Phone** → enable. (Add test numbers under
-   "Phone numbers for testing" to demo without burning real SMS verifications.)
-5. Console → **Firestore Database** → Create database (production mode; rules are in this repo).
-6. Console → **Storage** → Get started.
-7. Cloud Messaging works out of the box with the Android app registration.
+The project is created and wired up. **Project ID: `ogbaje-app-50549`**
+(console: https://console.firebase.google.com/project/ogbaje-app-50549/overview).
+
+Completed automatically:
+- ✅ Project created; **Android app** `com.ogbaje.app` and **Web app** registered.
+- ✅ `OgbajeApp/google-services.json` written (Android config, git-ignored).
+- ✅ `dashboard/.env.local` written (web config, git-ignored).
+- ✅ `.firebaserc` set to the project; **Firestore database created** (europe-west1);
+  **Firestore security rules deployed** (`firestore.rules`).
+- ✅ Firestore, Storage, Identity Toolkit APIs enabled.
+
+**Two console steps remain** (account/billing actions that have no reliable CLI):
+
+1. **Enable Phone sign-in** (required for login):
+   https://console.firebase.google.com/project/ogbaje-app-50549/authentication/providers
+   → **Get started** if prompted → **Phone** → Enable → Save.
+   (Optional: add a test number under "Phone numbers for testing" to demo without real SMS.)
+2. **Enable Storage** (optional — only needed for evidence-photo upload; **requires the free
+   Blaze pay-as-you-go plan**, which asks for a card but costs nothing at demo volumes):
+   https://console.firebase.google.com/project/ogbaje-app-50549/storage → Get started.
+   Then deploy its rules: `firebase deploy --only storage --project ogbaje-app-50549`.
+   If you skip this, the app works fully except attaching photos to an alert.
+
+Cloud Messaging works out of the box with the Android app registration. To re-run the whole
+setup for a fresh project: `firebase login` then `scripts/setup-firebase.ps1`.
 
 ## Path A — EAS cloud build (recommended; no Android SDK needed)
 
