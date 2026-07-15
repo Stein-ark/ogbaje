@@ -1,0 +1,18 @@
+rules_version = '2';
+
+// Ogbaje Storage rules — alert photos live under alerts/{alertId}/photos/*.
+// Uploads: signed-in users only. Reads: via download URL (token-gated by
+// Firebase) — the dashboard uses the URL stored on the photo doc.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /alerts/{alertId}/photos/{fileName} {
+      allow write: if request.auth != null
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow read: if true; // download URLs carry an unguessable token
+    }
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
